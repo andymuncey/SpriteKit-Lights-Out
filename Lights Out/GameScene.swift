@@ -26,8 +26,8 @@ class GameScene: SKScene, LightDelegate {
         newGameLabel = SKLabelNode(text: "New Game")
         newGameLabel.fontName = "Copperplate"
         newGameLabel.fontColor = SKColor.white
-        newGameLabel.fontSize = 25.0
-        newGameLabel.position = CGPoint(x: 0, y: (frame.size.height/2)-(newGameLabel.frame.height+topInset))
+        newGameLabel.fontSize = 22.0
+        newGameLabel.position = CGPoint(x: 0, y: (frame.size.height/2)-(newGameLabel.frame.height+topInset + 10))
         addChild(newGameLabel)
     }
     
@@ -38,8 +38,8 @@ class GameScene: SKScene, LightDelegate {
         movesLabel = SKLabelNode(text: "Moves: \(moves)")
         movesLabel!.fontName = "Copperplate"
         movesLabel!.fontColor = SKColor.white
-        movesLabel!.fontSize = 15.0
-        movesLabel!.position = CGPoint(x: frame.width/2 - (movesLabel!.frame.width/2 + 10), y: (frame.size.height/2)-(movesLabel!.frame.height+topInset))
+        movesLabel!.fontSize = 14.0
+        movesLabel!.position = CGPoint(x: frame.width/2 - (movesLabel!.frame.width/2), y: (frame.size.height/2)-(movesLabel!.frame.height+topInset))
         addChild(movesLabel!)
     }
     
@@ -50,8 +50,8 @@ class GameScene: SKScene, LightDelegate {
         gameNumberLabel = SKLabelNode(text: "#: \(number)")
         gameNumberLabel!.fontName = "Copperplate"
         gameNumberLabel!.fontColor = SKColor.white
-        gameNumberLabel!.fontSize = 15.0
-        gameNumberLabel!.position = CGPoint(x: 10 + gameNumberLabel!.frame.width/2 - frame.width/2, y: (frame.size.height/2)-(gameNumberLabel!.frame.height+topInset))
+        gameNumberLabel!.fontSize = 14.0
+        gameNumberLabel!.position = CGPoint(x:gameNumberLabel!.frame.width/2 - frame.width/2, y: (frame.size.height/2)-(gameNumberLabel!.frame.height+topInset))
         addChild(gameNumberLabel!)
     }
     
