@@ -3,16 +3,18 @@ import SpriteKit
 class GameScene: SKScene, LightDelegate {
     
     private var buttons : Array<LightNode>!
-    private var restartLabel : SKLabelNode!
-    private var movesLabel : SKLabelNode?
     private var moves = 0
+    private var newGameLabel : SKLabelNode!
+    private var movesLabel : SKLabelNode?
     private var gameNumberLabel : SKLabelNode?
+    
+    var topInset = CGFloat(0) //will be used to offset labels on devices with notch
     
     override func didMove(to view: SKView) {
         newGame()
-        newGameLabel()
+        addNewGameLabel()
     }
-    
+
     func newGame(){
         drawLightBoard()
         randomLights()
@@ -20,13 +22,13 @@ class GameScene: SKScene, LightDelegate {
         updateMovesLabel()
     }
     
-    private func newGameLabel(){
-        restartLabel = SKLabelNode(text: "New Game")
-        restartLabel.fontName = "Copperplate"
-        restartLabel.fontColor = SKColor.white
-        let topInset = CGFloat(50.0)
-        restartLabel.position = CGPoint(x: 0, y: (frame.size.height/2)-(restartLabel.frame.height+topInset))
-        addChild(restartLabel)
+    private func addNewGameLabel(){
+        newGameLabel = SKLabelNode(text: "New Game")
+        newGameLabel.fontName = "Copperplate"
+        newGameLabel.fontColor = SKColor.white
+        newGameLabel.fontSize = 25.0
+        newGameLabel.position = CGPoint(x: 0, y: (frame.size.height/2)-(newGameLabel.frame.height+topInset))
+        addChild(newGameLabel)
     }
     
     private func updateMovesLabel(){
@@ -36,7 +38,6 @@ class GameScene: SKScene, LightDelegate {
         movesLabel = SKLabelNode(text: "Moves: \(moves)")
         movesLabel!.fontName = "Copperplate"
         movesLabel!.fontColor = SKColor.white
-        let topInset = CGFloat(50.0)
         movesLabel!.fontSize = 15.0
         movesLabel!.position = CGPoint(x: frame.width/2 - (movesLabel!.frame.width/2 + 10), y: (frame.size.height/2)-(movesLabel!.frame.height+topInset))
         addChild(movesLabel!)
@@ -50,8 +51,7 @@ class GameScene: SKScene, LightDelegate {
         gameNumberLabel!.fontName = "Copperplate"
         gameNumberLabel!.fontColor = SKColor.white
         gameNumberLabel!.fontSize = 15.0
-        let topInset = CGFloat(50.0)
-        gameNumberLabel!.position = CGPoint(x: gameNumberLabel!.frame.width/2 - frame.width/2, y: (frame.size.height/2)-(gameNumberLabel!.frame.height+topInset))
+        gameNumberLabel!.position = CGPoint(x: 10 + gameNumberLabel!.frame.width/2 - frame.width/2, y: (frame.size.height/2)-(gameNumberLabel!.frame.height+topInset))
         addChild(gameNumberLabel!)
     }
     
@@ -68,7 +68,7 @@ class GameScene: SKScene, LightDelegate {
         
         for i in 0...24 {
             
-            //grid will start from bottom left
+            //grid drawn from bottom left
             let row = CGFloat(i % 5)
             let col = CGFloat(i / 5);
             
@@ -136,9 +136,6 @@ class GameScene: SKScene, LightDelegate {
     }
     
     private func dropButtons(){
-//        for button in buttons {
-//            button.physicsBody = SKPhysicsBody(rectangleOf: button.frame.size)
-//        }
         var sequence = [SKAction]()
         while !buttons.isEmpty {
             let button = buttons.randomElement()!
@@ -165,7 +162,7 @@ class GameScene: SKScene, LightDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if restartLabel.frame.contains(touches.first!.location(in: self)) {
+        if newGameLabel.frame.contains(touches.first!.location(in: self)) {
             dropButtons()
             let delay = SKAction.wait(forDuration: 1.0)
             let newGame = SKAction.run {
@@ -173,7 +170,6 @@ class GameScene: SKScene, LightDelegate {
             }
             let sequence = SKAction.sequence([delay,newGame])
             run(sequence)
-            //newGame()
         }
     }
 }
