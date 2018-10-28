@@ -1,17 +1,7 @@
-//
-//  LightNode.swift
-//  Lights Out
-//
-//  Created by Andrew Muncey on 26/10/2018.
-//  Copyright © 2018 Andrew Muncey. All rights reserved.
-//
-
 import SpriteKit
 
 protocol LightDelegate {
-    
-    func pressed(id: Int)
-    
+    func lightPressed(id: Int)
 }
 
 class LightNode : SKShapeNode {
@@ -21,13 +11,11 @@ class LightNode : SKShapeNode {
         super.init()
     }
     
-    
     private (set) var lit = false;
     private var index : Int?
     private var delegate : LightDelegate?
     
     init(rect: CGRect, cornerRadius: CGFloat, index: Int, delegate: LightDelegate){
-        
         super.init()
         self.init(rect: rect, cornerRadius: cornerRadius)
         isUserInteractionEnabled = true
@@ -41,24 +29,14 @@ class LightNode : SKShapeNode {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         if let actualIndex = index {
-            delegate?.pressed(id: actualIndex)
+            delegate?.lightPressed(id: actualIndex)
         }
-       
     }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-   //     delegate?.pressed(id: index != nil ? index! : 0)
-    }
-    
     
     func toggle(){
         lit.toggle()
         fillColor = lit ? UIColor.yellow : UIColor.purple
     }
-    
-    
-    
 }
 

@@ -4,16 +4,20 @@ class GameScene: SKScene, LightDelegate {
     
     private var buttons : Array<LightNode>!
     private var restartLabel : SKLabelNode!
+    private var movesLabel : SKLabelNode?
+    private var moves = 0
+    private var gameNumberLabel : SKLabelNode?
     
     override func didMove(to view: SKView) {
-        
         newGame()
         newGameLabel()
     }
     
     func newGame(){
-        setupLights()
+        drawLightBoard()
         randomLights()
+        moves = 0
+        updateMovesLabel()
     }
     
     private func newGameLabel(){
@@ -25,9 +29,40 @@ class GameScene: SKScene, LightDelegate {
         addChild(restartLabel)
     }
     
-    private func setupLights(){
+    private func updateMovesLabel(){
+        if movesLabel != nil {
+            movesLabel!.removeFromParent()
+        }
+        movesLabel = SKLabelNode(text: "Moves: \(moves)")
+        movesLabel!.fontName = "Copperplate"
+        movesLabel!.fontColor = SKColor.white
+        let topInset = CGFloat(50.0)
+        movesLabel!.fontSize = 15.0
+        movesLabel!.position = CGPoint(x: frame.width/2 - (movesLabel!.frame.width/2 + 10), y: (frame.size.height/2)-(movesLabel!.frame.height+topInset))
+        addChild(movesLabel!)
+    }
+    
+    func gameNumberLabel(number: Int){
+        if gameNumberLabel != nil {
+            gameNumberLabel!.removeFromParent()
+        }
+        gameNumberLabel = SKLabelNode(text: "#: \(number)")
+        gameNumberLabel!.fontName = "Copperplate"
+        gameNumberLabel!.fontColor = SKColor.white
+        gameNumberLabel!.fontSize = 15.0
+        let topInset = CGFloat(50.0)
+        gameNumberLabel!.position = CGPoint(x: gameNumberLabel!.frame.width/2 - frame.width/2, y: (frame.size.height/2)-(gameNumberLabel!.frame.height+topInset))
+        addChild(gameNumberLabel!)
+    }
+    
+    private func incrementMovesCount() {
+        moves += 1
+        movesLabel?.text = "Moves: \(moves)"
+    }
+    
+    private func drawLightBoard(){
         buttons = Array<LightNode>()
-        //centre of canvas is 00
+        //centre of canvas is 0,0
         let width = min(frame.size.width, frame.size.height)
         let buttonWidth = width/5
         
@@ -53,21 +88,27 @@ class GameScene: SKScene, LightDelegate {
     }
     
     private func randomLights() {
+        var gameNumber = ""
         for i in 0...24 {
             if Bool.random() { //use arc4random_uniform(2) == 1 for Swift 4.1 and earlier
-                pressed(id: i) //ensure that the game can be won, as each press toggles the same lights the player does
-                
+                togglePattern(id: i) //ensure that the game can be won, as each press toggles the same lights the player does
+                gameNumber.append("1")
                 //print(i) //uncomment this to see which lights to turn off to win the game
             }
+            else {
+                gameNumber.append("0")
+            }
+        }
+        if let gameInt = Int(gameNumber, radix: 2) {
+            gameNumberLabel(number: gameInt)
         }
     }
     
-    func pressed(id: Int) {
-        
+    func togglePattern(id: Int){
         //this light
         buttons[id].toggle()
         
-        //above
+        //below
         if id >= 5 {
             buttons[id-5].toggle()
         }
@@ -79,11 +120,16 @@ class GameScene: SKScene, LightDelegate {
         if id % 5 < 4 {
             buttons[id+1].toggle()
         }
-        //below
+        //above
         if id < 20 {
             buttons[id+5].toggle()
         }
+    }
+    
+    func lightPressed(id: Int) {
         
+        incrementMovesCount()
+        togglePattern(id: id)
         if completed() {
             dropButtons()
         }
@@ -107,11 +153,9 @@ class GameScene: SKScene, LightDelegate {
             sequence.append(delay)
         }
             run(SKAction.sequence(sequence))
-        
     }
     
     func completed() -> Bool{
-        
         for button in buttons {
             if button.lit {
                 return false
@@ -130,7 +174,6 @@ class GameScene: SKScene, LightDelegate {
             let sequence = SKAction.sequence([delay,newGame])
             run(sequence)
             //newGame()
-            
         }
     }
 }
