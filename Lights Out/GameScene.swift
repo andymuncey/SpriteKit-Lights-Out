@@ -142,6 +142,7 @@ class GameScene: SKScene, LightDelegate {
         var sequence = [SKAction]()
         while !buttons.isEmpty {
             let button = buttons.randomElement()!
+            button.isUserInteractionEnabled = false //prevent user tapping old button and triggering action
             buttons.remove(at: buttons.firstIndex(of: button)!)
             
             let delay = SKAction.wait(forDuration: 0.03)
@@ -166,12 +167,16 @@ class GameScene: SKScene, LightDelegate {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if newGameLabel.frame.contains(touches.first!.location(in: self)) {
+            newGameLabel.isUserInteractionEnabled = true //no action associated so essentially disables the button
             dropButtons()
             let delay = SKAction.wait(forDuration: 1.0)
             let newGame = SKAction.run {
                 self.newGame()
             }
-            let sequence = SKAction.sequence([delay,newGame])
+            let reEnableNewGameButton = SKAction.run {
+                self.newGameLabel.isUserInteractionEnabled = false
+            }
+            let sequence = SKAction.sequence([delay,newGame,reEnableNewGameButton])
             run(sequence)
         }
     }
