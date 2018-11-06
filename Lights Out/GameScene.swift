@@ -14,10 +14,11 @@ class GameScene: SKScene, LightDelegate {
         newGame()
         addNewGameLabel()
     }
-
-    func newGame(){
+    
+    private func newGame(){
         drawLightBoard()
-        randomLights()
+        let gameNumber = randomLights()
+        gameNumberLabel(number: gameNumber)
         moves = 0
         updateMovesLabel()
     }
@@ -43,7 +44,7 @@ class GameScene: SKScene, LightDelegate {
         addChild(movesLabel!)
     }
     
-    func gameNumberLabel(number: Int){
+    private func gameNumberLabel(number: UInt32){
         if gameNumberLabel != nil {
             gameNumberLabel!.removeFromParent()
         }
@@ -57,7 +58,7 @@ class GameScene: SKScene, LightDelegate {
     
     private func incrementMovesCount() {
         moves += 1
-        movesLabel?.text = "Moves: \(moves)"
+        updateMovesLabel()
     }
     
     private func drawLightBoard(){
@@ -87,24 +88,27 @@ class GameScene: SKScene, LightDelegate {
         }
     }
     
-    private func randomLights() {
-        var gameNumber = ""
+    
+    /**
+     Generates a random pattern by toggling the lights.
+     Represents the toggling of inidividual lights in a bit pattern
+     Bit pattern gives each game a unique number (which could be used to solve the game)
+     - Returns: A number representing the game
+     */
+    private func randomLights() -> UInt32 {
+        var gameNumber : UInt32 = 0
         for i in 0...24 {
+            gameNumber <<= 1 // (e.g. 00001100 becomes 00011000)
             if Bool.random() { //use arc4random_uniform(2) == 1 for Swift 4.1 and earlier
                 togglePattern(id: i) //ensure that the game can be won, as each press toggles the same lights the player does
-                gameNumber.append("1")
+                gameNumber += 1
                 //print(i) //uncomment this to see which lights to turn off to win the game
             }
-            else {
-                gameNumber.append("0")
-            }
         }
-        if let gameInt = Int(gameNumber, radix: 2) {
-            gameNumberLabel(number: gameInt)
-        }
+        return gameNumber
     }
     
-    func togglePattern(id: Int){
+    private func togglePattern(id: Int){
         //this light
         buttons[id].toggle()
         
@@ -127,7 +131,6 @@ class GameScene: SKScene, LightDelegate {
     }
     
     func lightPressed(id: Int) {
-        
         incrementMovesCount()
         togglePattern(id: id)
         if completed() {
@@ -149,10 +152,10 @@ class GameScene: SKScene, LightDelegate {
             sequence.append(dropButton)
             sequence.append(delay)
         }
-            run(SKAction.sequence(sequence))
+        run(SKAction.sequence(sequence))
     }
     
-    func completed() -> Bool{
+    private func completed() -> Bool{
         for button in buttons {
             if button.lit {
                 return false
