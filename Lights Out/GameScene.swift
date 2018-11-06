@@ -78,11 +78,12 @@ class GameScene: SKScene, LightDelegate {
             let location = CGRect(x: offset + (buttonWidth * row), y: offset + (buttonWidth * col), width: buttonWidth, height: buttonWidth)
             let lightNode = LightNode(rect: location, cornerRadius: buttonWidth/4, index:i, delegate: self)
             
-            lightNode.fillColor = SKColor.purple
+            //animate the buttons by fading them into view
             lightNode.alpha = 0
             let animation = SKAction.fadeIn(withDuration: 2.0)
             lightNode.run(animation)
             
+            //add to screen and also add references the array
             addChild(lightNode)
             buttons.append(lightNode)
         }
