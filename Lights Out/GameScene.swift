@@ -7,6 +7,7 @@ class GameScene: SKScene, LightDelegate {
     private var newGameLabel : SKLabelNode!
     private var movesLabel : SKLabelNode?
     private var gameNumberLabel : SKLabelNode?
+    private var currentGame : UInt32?
     
     var topInset = CGFloat(0) //will be used to offset labels on devices with notch
     
@@ -17,8 +18,8 @@ class GameScene: SKScene, LightDelegate {
     
     private func newGame(){
         drawLightBoard()
-        let gameNumber = randomLights()
-        gameNumberLabel(number: gameNumber)
+        currentGame = randomLights()
+        gameNumberLabel(number: currentGame!)
         moves = 0
         updateMovesLabel()
     }
@@ -103,10 +104,28 @@ class GameScene: SKScene, LightDelegate {
             if Bool.random() { //use arc4random_uniform(2) == 1 for Swift 4.1 and earlier
                 togglePattern(id: i) //ensure that the game can be won, as each press toggles the same lights the player does
                 gameNumber += 1
-                //print(i) //uncomment this to see which lights to turn off to win the game
             }
         }
         return gameNumber
+    }
+    
+    func solution(gameNumber: UInt32) -> String{
+        var gameNumber = gameNumber //make mutable
+        var solution = "Toggle these lights, starting with 0 at the bottom left\n"
+        var lights = [Int]()
+        for i in (0...24).reversed() {
+            if gameNumber % 2 == 1 {
+                lights.insert(i, at: 0)
+            }
+            gameNumber >>= 1
+        }
+        for (index,light) in lights.enumerated() {
+            if index > 0 {
+                solution = solution + ","
+            }
+            solution = solution + String(light)
+        }
+        return solution
     }
     
     private func togglePattern(id: Int){
@@ -179,6 +198,13 @@ class GameScene: SKScene, LightDelegate {
             }
             let sequence = SKAction.sequence([delay,newGame,reEnableNewGameButton])
             run(sequence)
+        }
+        
+        if  gameNumberLabel?.frame.contains(touches.first!.location(in: self)) ?? false {
+            let controller = UIAlertController(title: "Solution", message: solution(gameNumber: currentGame!), preferredStyle:.alert)
+            controller.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.view?.window?.rootViewController?.present(controller, animated: true, completion: nil)
+            
         }
     }
 }
