@@ -7,7 +7,7 @@ class GameScene: SKScene, LightDelegate {
     private var newGameLabel : SKLabelNode!
     private var movesLabel : SKLabelNode?
     private var gameNumberLabel : SKLabelNode?
-    private var currentGame : UInt32?
+    private var solutionPattern : UInt32?
     
     var topInset = CGFloat(0) //will be used to offset labels on devices with notch
     
@@ -18,8 +18,8 @@ class GameScene: SKScene, LightDelegate {
     
     private func newGame(){
         drawLightBoard()
-        currentGame = randomLights()
-        gameNumberLabel(number: currentGame!)
+        solutionPattern = randomLights()
+        gameNumberLabel(number: solutionPattern!)
         moves = 0
         updateMovesLabel()
     }
@@ -109,15 +109,16 @@ class GameScene: SKScene, LightDelegate {
         return gameNumber
     }
     
-    private func solution(gameNumber: UInt32) -> String{
-        var gameNumber = gameNumber //make mutable
+    private func solution() -> String{
+        var gameNumber = solutionPattern //make mutable
+        if  gameNumber != nil {
         var solution = "Toggle these lights, starting with 0 at the bottom left\n"
         var lights = [Int]()
         for i in (0...24).reversed() {
-            if gameNumber % 2 == 1 {
+            if gameNumber! % 2 == 1 {
                 lights.insert(i, at: 0)
             }
-            gameNumber >>= 1
+            gameNumber! >>= 1
         }
         for (index,light) in lights.enumerated() {
             if index > 0 {
@@ -125,10 +126,21 @@ class GameScene: SKScene, LightDelegate {
             }
             solution = solution + String(light)
         }
+        
         return solution
+        }
+        return ""
     }
     
     private func togglePattern(id: Int){
+        
+        //toggle solution
+        if let actualPattern = solutionPattern {
+            var lightBit : UInt32 = 1
+            lightBit <<= (24-id)
+            solutionPattern = actualPattern ^ lightBit
+        }
+        
         //this light
         buttons[id].toggle()
         
@@ -201,7 +213,7 @@ class GameScene: SKScene, LightDelegate {
         }
         
         if  gameNumberLabel?.frame.contains(touches.first!.location(in: self)) ?? false {
-            let controller = UIAlertController(title: "Solution", message: solution(gameNumber: currentGame!), preferredStyle:.alert)
+            let controller = UIAlertController(title: "Solution", message: solution(), preferredStyle:.alert)
             controller.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self.view?.window?.rootViewController?.present(controller, animated: true, completion: nil)
             
