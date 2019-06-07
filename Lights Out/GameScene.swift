@@ -109,7 +109,7 @@ class GameScene: SKScene, LightDelegate {
         return gameNumber
     }
     
-    func solution(gameNumber: UInt32) -> String{
+    private func solution(gameNumber: UInt32) -> String{
         var gameNumber = gameNumber //make mutable
         var solution = "Toggle these lights, starting with 0 at the bottom left\n"
         var lights = [Int]()
